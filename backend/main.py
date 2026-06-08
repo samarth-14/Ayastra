@@ -13,6 +13,15 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Ayastra API")
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Dependency — opens and closes DB connection per request
 def get_db():
     db = SessionLocal()
