@@ -5,9 +5,9 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignup, setIsSignup] = useState(false);
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Temporary Login
     if (
       email === "admin@ayastra.com" &&
       password === "123456"
@@ -17,30 +17,54 @@ export default function LoginPage() {
       alert("Invalid Credentials");
     }
   };
-
+  const handleGoogleLogin = () => {
+    router.push("/dashboard");
+  };
+  const handleSignup = (e: React.FormEvent) => {
+  e.preventDefault();
+  if (email && password) {
+    alert("Account Created Successfully!");
+    router.push("/dashboard");
+  }
+};
   return (
-    <div className="min-h-screen bg-[#081329] flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-[#1B2940] rounded-3xl p-10 shadow-2xl border border-slate-700">
-        
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold text-[#D4AF37]">
+    <div className="min-h-screen bg-[#081329] flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl rounded-[32px] border border-slate-700 bg-[#081329] shadow-2xl px-10 py-14">
+        {/* Logo */}
+        <div className="text-center">
+          <h1 className="text-7xl font-extrabold text-[#D4AF37] tracking-wide">
             AYASTRA
           </h1>
-
-          <p className="text-slate-400 mt-3">
-            Manufacturing Intelligence Dashboard
-          </p>
+          <p className="text-slate-400 text-xl mt-4">
+  {isSignup
+    ? "Create your AYASTRA account"
+    : "Manufacturing Intelligence Dashboard"}
+</p>
         </div>
-
+        {/* Google Button */}
+        <div className="mt-12 flex justify-center">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full max-w-3xl bg-white text-black border-2 border-slate-400 rounded-2xl py-5 text-2xl font-semibold hover:bg-slate-100 transition"
+          >
+            Continue with Google
+          </button>
+        </div>
+        {/* Divider */}
+        <div className="flex items-center gap-6 my-10">
+          <div className="flex-1 h-[1px] bg-slate-600" />
+          <span className="text-slate-400 text-2xl">or</span>
+          <div className="flex-1 h-[1px] bg-slate-600" />
+        </div>
+        {/* Form */}
         <form
-          onSubmit={handleLogin}
-          className="space-y-5"
+          onSubmit={isSignup ? handleSignup : handleLogin}
+  className="max-w-3xl mx-auto"
         >
-          <div>
-            <label className="block text-slate-300 mb-2">
+          <div className="mb-8">
+            <label className="block text-white text-xl mb-3 font-medium uppercase">
               Email
             </label>
-
             <input
               type="email"
               placeholder="Enter email"
@@ -48,16 +72,13 @@ export default function LoginPage() {
               onChange={(e) =>
                 setEmail(e.target.value)
               }
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-[#D4AF37]"
-              required
+              className="w-full bg-transparent border border-slate-600 rounded-2xl px-6 py-5 text-white text-xl outline-none focus:border-[#D4AF37]"
             />
           </div>
-
           <div>
-            <label className="block text-slate-300 mb-2">
+            <label className="block text-white text-xl mb-3 font-medium uppercase">
               Password
             </label>
-
             <input
               type="password"
               placeholder="Enter password"
@@ -65,23 +86,32 @@ export default function LoginPage() {
               onChange={(e) =>
                 setPassword(e.target.value)
               }
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-[#D4AF37]"
-              required
+              className="w-full bg-transparent border border-slate-600 rounded-2xl px-6 py-5 text-white text-xl outline-none focus:border-[#D4AF37]"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-[#D4AF37] text-black font-bold py-3 rounded-xl hover:opacity-90 transition"
+            className="w-full mt-10 bg-black text-white py-5 rounded-2xl text-3xl font-semibold hover:opacity-90 transition"
           >
-            Login
+            {isSignup ? "Create Account" : "Log in"}
           </button>
         </form>
-        <div className="mt-6 text-center text-slate-400 text-sm">
-          Demo Credentials:
-          <br />
-          admin@ayastra.com
-          <br />
-          123456
+        {/* Links */}
+        <div className="text-center mt-10 space-y-5">
+          <button className="text-blue-500 text-2xl hover:underline">
+            Reset password
+          </button>
+          <div className="text-slate-400 text-xl">
+            No account?{" "}
+            <button
+  onClick={() => setIsSignup(!isSignup)}
+  className="text-blue-500 hover:underline"
+>
+  {isSignup
+    ? "Already have an account? Login"
+    : "Create one"}
+</button>
+          </div>
         </div>
       </div>
     </div>
