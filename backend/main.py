@@ -5,6 +5,9 @@ from models import Product, BrassPrice, ScrapInventory
 import os
 import requests
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from auth import hash_password, verify_password, create_access_token, get_current_user
+from models import Product, BrassPrice, ScrapInventory, User
 
 load_dotenv()
 ALPHA_VANTAGE_KEY = os.getenv("ALPHA_VANTAGE_KEY")
@@ -128,3 +131,43 @@ def fetch_live_brass_price(db: Session = Depends(get_db)):
         "price_per_kg": price,
         "date": latest["date"]
     }
+
+
+# --- AUTH ENDPOINTS ---
+
+class SignupRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/auth/signup")
+def signup(request: SignupRequest, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == request.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    new_user = User(
+        name=request.name,
+        email=request.email,
+        hashed_password=hash_password(request.password)
+    )
+    db.add(new_user)
+    db.commit()
+    return {"message": "Account created successfully", "email": request.email}
+
+@app.post("/auth/login")
+def login(request: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user or not verify_password(request.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    token = create_access_token({"sub": user.email})
+    return {"access_token": token, "token_type": "bearer", "name": user.name}
+
+@app.get("/auth/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {"id": current_user.id, "name": current_user.name, "email": current_user.email}
