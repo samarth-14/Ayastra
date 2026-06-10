@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router";
+import { login } from "../../api";
 
 /* ─── Particle Globe (same engine as HeroSection) ─── */
 interface Particle {
@@ -197,10 +198,18 @@ export function LoginPage() {
   const [loading, setLoading]   = useState(false);
   const [focused, setFocused]   = useState<"email"|"password"|null>(null);
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); navigate("/"); }, 1800);
+    try {
+      await login(email, password);
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogle = () => {
