@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AstraAvatar } from "./AstraAvatar";
-import { chatWithAstra } from "../api";
+import { chatWithAstra } from "../../api";
 
 interface Message {
   role: "user" | "astra";

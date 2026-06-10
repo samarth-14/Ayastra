@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Search, Plus, MessageCircle, Truck, Clock, CheckCircle } from "lucide-react";
-import { getOrders } from "../../api";
+import { getOrders } from "../../../api";
 
 const ORDERS_MOCK = [
   { id: "SO-2024-8821", customer: "Rajesh Metals", items: "50MT Steel Billets", amount: "₹28.5L", status: "dispatched", channel: "whatsapp", date: "Jun 10", eta: "Jun 11" },

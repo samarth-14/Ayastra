@@ -52,13 +52,27 @@ export const getDashboardRevenueChart = async () => {
 };
 
 // ============ INVENTORY ENDPOINTS ============
-export const getInventory = async () => {
-  const response = await api.get("/inventory");
+export const getInventoryKpis = async () => {
+  const companyId = localStorage.getItem("company_id") || "1";
+
+  const response = await api.get("/inventory", {
+    params: {
+      company_id: companyId,
+    },
+  });
+
   return response.data;
 };
 
 export const getInventoryKPIs = async () => {
-  const response = await api.get("/inventory/kpis");
+  const companyId = localStorage.getItem("company_id") || "1";
+
+  const response = await api.get("/inventory/kpis", {
+    params: {
+      company_id: companyId,
+    },
+  });
+
   return response.data;
 };
 

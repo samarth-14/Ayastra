@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { User, Bell, Shield, Webhook, Building, CheckCircle } from "lucide-react";
-import { getUserProfile, updateUserProfile, getUserNotifications, updateUserNotifications, getCompanySettings, updateCompanySettings, getIntegrations, updateIntegration } from "../../api";
+import { getUserProfile, updateUserProfile, getUserNotifications, updateUserNotifications, getCompanySettings, updateCompanySettings, getIntegrations, updateIntegration } from "../../../api";
 
 const SECTIONS = [
   { id: "profile", label: "Profile", icon: <User size={16} /> },
