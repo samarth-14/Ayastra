@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AstraAvatar } from "./AstraAvatar";
+import { chatWithAstra } from "../api";
 
 interface Message {
   role: "user" | "astra";
@@ -59,19 +60,45 @@ export function AstraChatPanel({ open, onClose }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
     const ts = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     setMessages((prev) => [...prev, { role: "user", text, ts }]);
     setInput("");
     setTyping(true);
-    setTimeout(() => {
-      setTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        { role: "astra", text: getBotReply(text), ts: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
-      ]);
-    }, 1200 + Math.random() * 600);
+    
+    try {
+      // Try to get response from API
+      const apiResponse = await chatWithAstra(text);
+      
+      if (apiResponse && apiResponse.reply) {
+        // API responded with real data
+        setTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          { role: "astra", text: apiResponse.reply, ts: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+        ]);
+      } else {
+        // Fall back to mock replies if API not available
+        setTimeout(() => {
+          setTyping(false);
+          setMessages((prev) => [
+            ...prev,
+            { role: "astra", text: getBotReply(text), ts: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+          ]);
+        }, 1200 + Math.random() * 600);
+      }
+    } catch (error) {
+      // Error calling API - use mock replies
+      console.error("Error calling AI:", error);
+      setTimeout(() => {
+        setTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          { role: "astra", text: getBotReply(text), ts: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+        ]);
+      }, 1200 + Math.random() * 600);
+    }
   };
 
   return (

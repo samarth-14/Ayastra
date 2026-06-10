@@ -238,4 +238,16 @@ export const markAlertAsRead = async (alertId: string) => {
   return response.data;
 };
 
+// ============ ASTRA AI ENDPOINTS ============
+export const chatWithAstra = async (message: string, context?: any) => {
+  try {
+    const response = await api.post("/astra/chat", { message, context });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to chat with Astra:", error);
+    // Return null to indicate AI endpoint not available
+    return null;
+  }
+};
+
 export default api;
