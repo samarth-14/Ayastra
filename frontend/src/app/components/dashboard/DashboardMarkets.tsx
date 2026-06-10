@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { TrendingUp, TrendingDown, Activity } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { getMarketPrices, getMarketHistory, getMarketForecasts } from "../../../api";
 
 const METALS = [
   { name: "Steel Billet", code: "STL-100", price: 48200, prev: 47640, unit: "MT", color: "#3B82F6", exchange: "MCX" },
@@ -30,6 +31,41 @@ const FORECAST = [
 
 export function DashboardMarkets() {
   const [selected, setSelected] = useState("STL");
+  const [metals, setMetals] = useState(METALS);
+  const [history, setHistory] = useState<Record<string, { d: string; v: number }[]>>(HISTORY_6M);
+  const [forecasts, setForecasts] = useState(FORECAST);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      setLoading(true);
+      try {
+        const [pricesData, historyData, forecastsData] = await Promise.all([
+          getMarketPrices(),
+          getMarketHistory("STL"),
+          getMarketForecasts(),
+        ]);
+
+        if (pricesData && Array.isArray(pricesData)) {
+          setMetals(pricesData);
+        }
+
+        if (historyData) {
+          setHistory((prev) => ({ ...prev, STL: historyData }));
+        }
+
+        if (forecastsData && Array.isArray(forecastsData)) {
+          setForecasts(forecastsData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch market data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMarketData();
+  }, []);
 
   const selMetal = METALS.find((m) => m.code.startsWith(selected));
   const chartData = HISTORY_6M[selected] ?? HISTORY_6M.STL;
@@ -40,27 +76,28 @@ export function DashboardMarkets() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <div>
           <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: "#e8eaf0", marginBottom: 4 }}>Markets</h2>
-          <p style={{ color: "#8892a4", fontSize: "0.85rem", fontFamily: "'Inter',sans-serif" }}>Live MCX & LME prices · AI price forecasts</p>
+          <p style={{ color: "#8892a4", fontSize: "0.85rem", fontFamily: "'Inter',sans-serif" }}>Live MCX & LME prices · AI price forecasts {loading && "(loading...)"}</p>
         </div>
-        <span style={{ color: "#22C55E", fontSize: "0.72rem", fontFamily: "'JetBrains Mono',monospace", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 8, padding: "4px 10px" }}>● LIVE MCX</span>
+        <span style={{ color: loading ? "#8892a4" : "#22C55E", fontSize: "0.72rem", fontFamily: "'JetBrains Mono',monospace", background: loading ? "rgba(136,146,164,0.1)" : "rgba(34,197,94,0.1)", border: `1px solid ${loading ? "rgba(136,146,164,0.25)" : "rgba(34,197,94,0.25)"}`, borderRadius: 8, padding: "4px 10px" }}>● {loading ? "LOADING" : "LIVE MCX"}</span>
       </div>
 
       {/* Ticker row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: "0.6rem", marginBottom: "1.5rem" }}>
-        {METALS.map((m) => {
-          const pct = ((m.price - m.prev) / m.prev * 100).toFixed(2);
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: "0.6rem", marginBottom: "1.5rem", opacity: loading ? 0.6 : 1 }}>
+        {metals.map((m) => {
+          const pct = m.price && m.prev ? ((m.price - m.prev) / m.prev * 100).toFixed(2) : "0.00";
           const up = m.price >= m.prev;
+          const metalCode = m.code?.split("-")[0] || m.name;
           return (
-            <motion.button key={m.code}
-              onClick={() => setSelected(m.code.split("-")[0])}
+            <motion.button key={m.code || m.name}
+              onClick={() => setSelected(metalCode)}
               whileHover={{ scale: 1.04 }}
-              style={{ background: selected === m.code.split("-")[0] ? `${m.color}15` : "rgba(11,17,32,0.9)", border: `1px solid ${selected === m.code.split("-")[0] ? m.color : "rgba(59,130,246,0.1)"}`, borderRadius: 12, padding: "0.85rem 0.75rem", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
+              style={{ background: selected === metalCode ? `${m.color}15` : "rgba(11,17,32,0.9)", border: `1px solid ${selected === metalCode ? m.color : "rgba(59,130,246,0.1)"}`, borderRadius: 12, padding: "0.85rem 0.75rem", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ color: m.color, fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "0.72rem" }}>{m.code}</span>
+                <span style={{ color: m.color, fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "0.72rem" }}>{m.code || m.name}</span>
                 {up ? <TrendingUp size={12} style={{ color: "#22C55E" }} /> : <TrendingDown size={12} style={{ color: "#EF4444" }} />}
               </div>
               <div style={{ color: "#e8eaf0", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "0.9rem" }}>
-                ₹{m.price.toLocaleString()}
+                ₹{m.price ? m.price.toLocaleString() : "..."}
               </div>
               <div style={{ color: up ? "#22C55E" : "#EF4444", fontSize: "0.68rem", fontFamily: "'JetBrains Mono',monospace", marginTop: 2 }}>
                 {up ? "+" : ""}{pct}%
