@@ -43,16 +43,15 @@ export const login = async (email: string, password: string) => {
   return response.data;
 };
 // ============ DASHBOARD ENDPOINTS ============
-export const getDashboardSummary = async () => {
-  const response = await api.get("/dashboard/summary");
+export const getDashboardSummary = async (companyId: string) => {
+  const response = await api.get("/dashboard/summary", { params: { company_id: companyId } });
   return response.data;
 };
 
-export const getDashboardRevenueChart = async () => {
-  const response = await api.get("/dashboard/revenue-chart");
+export const getDashboardRevenueChart = async (companyId: string) => {
+  const response = await api.get("/dashboard/revenue-chart", { params: { company_id: companyId } });
   return response.data;
 };
-
 // ============ INVENTORY ENDPOINTS ============
 export const getInventory = async () => {
   const companyId = localStorage.getItem("company_id") || "1";
@@ -251,11 +250,10 @@ export const updateIntegration = async (integrationId: string, updates: any) => 
 };
 
 // ============ ALERTS ENDPOINTS ============
-export const getAlerts = async () => {
-  const response = await api.get("/alerts");
+export const getAlerts = async (companyId?: string) => {
+  const response = await api.get("/alerts", { params: companyId ? { company_id: companyId } : {} });
   return response.data;
 };
-
 export const markAlertAsRead = async (alertId: string) => {
   const response = await api.patch(`/alerts/${alertId}/read`);
   return response.data;

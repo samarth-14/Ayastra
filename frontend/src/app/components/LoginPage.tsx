@@ -596,12 +596,13 @@ export function LoginPage() {
               <p className="text-center mt-5" style={{ color: "#8892a4", fontSize: "0.8rem", fontFamily: "'Inter', sans-serif" }}>
                 Don't have an account?{" "}
                 <button
-                  style={{ color: "#F59E0B", fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.75")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                >
-                  Create Account
-                </button>
+                 style={{ color: "#F59E0B", fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.75")}
+                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                 onClick={() => navigate("/signup")}
+               >
+                 Create Account
+               </button>
               </p>
             </div>
           </motion.div>
