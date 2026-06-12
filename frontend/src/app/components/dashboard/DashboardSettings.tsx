@@ -52,8 +52,8 @@ export function DashboardSettings() {
   const [loading, setLoading] = useState(true);
 
   // Sample IDs (in production, these would come from auth context)
-  const userId = "user-1";
-  const companyId = "company-1";
+ const userId = localStorage.getItem("user_id") || "1";
+ const companyId = localStorage.getItem("company_id") || "1";
 
   useEffect(() => {
     const fetchSettings = async () => {
