@@ -55,7 +55,7 @@ const stats = [
 
 export function AnalyticsSection() {
   return (
-    <section id="analytics" className="relative py-32 overflow-hidden" style={{ background: "#050816" }}>
+    <section id="analytics" className="relative py-32 overflow-hidden" style={{ background: "#141C2E" }}>
       <div className="absolute inset-0 pointer-events-none"
         style={{ background: "radial-gradient(ellipse 80% 50% at 50% 100%, rgba(59,130,246,0.04) 0%, transparent 60%)" }} />
 

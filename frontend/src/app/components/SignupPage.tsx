@@ -42,7 +42,7 @@ export function SignupPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#050816", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#141C2E", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif" }}>
       <div style={{ width: "100%", maxWidth: "420px", padding: "2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "2rem", color: "#F59E0B", marginBottom: "0.5rem" }}>
@@ -76,7 +76,7 @@ export function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            style={{ width: "100%", padding: "0.875rem", borderRadius: "12px", background: loading ? "rgba(245,158,11,0.4)" : "linear-gradient(135deg,#F59E0B,#D97706)", color: "#050816", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: loading ? "not-allowed" : "pointer", marginTop: "0.5rem" }}
+            style={{ width: "100%", padding: "0.875rem", borderRadius: "12px", background: loading ? "rgba(245,158,11,0.4)" : "linear-gradient(135deg,#F59E0B,#D97706)", color: "#141C2E", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: loading ? "not-allowed" : "pointer", marginTop: "0.5rem" }}
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>

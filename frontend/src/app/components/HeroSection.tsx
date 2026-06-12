@@ -200,7 +200,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: "#050816" }}>
+    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: "#141C2E" }}>
       {/* Background mesh */}
       <div className="absolute inset-0 pointer-events-none"
         style={{
@@ -283,7 +283,7 @@ export function HeroSection() {
               className="px-7 py-3.5 rounded-xl font-semibold text-base"
               style={{
                 background: "linear-gradient(135deg, #F59E0B, #D97706)",
-                color: "#050816",
+                color: "#141C2E",
                 fontFamily: "'Space Grotesk', sans-serif",
                 letterSpacing: "0.01em",
               }}
@@ -400,7 +400,7 @@ export function HeroSection() {
 
       {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-        style={{ background: "linear-gradient(transparent, #050816)" }} />
+        style={{ background: "linear-gradient(transparent, #141C2E)" }} />
 
       <style>{`
         @keyframes spin {

@@ -230,7 +230,7 @@ export function AstraChatPanel({ open, onClose }: Props) {
                     </div>
                   ) : (
                     <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center mt-0.5"
-                      style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#050816", fontWeight: 700, fontSize: "0.65rem", fontFamily: "'Space Grotesk', sans-serif" }}>
+                      style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#141C2E", fontWeight: 700, fontSize: "0.65rem", fontFamily: "'Space Grotesk', sans-serif" }}>
                       YOU
                     </div>
                   )}
@@ -333,7 +333,7 @@ export function AstraChatPanel({ open, onClose }: Props) {
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200"
                   style={{
                     background: input.trim() ? "linear-gradient(135deg, #F59E0B, #D97706)" : "rgba(59,130,246,0.1)",
-                    color: input.trim() ? "#050816" : "#4B5563",
+                    color: input.trim() ? "#141C2E" : "#4B5563",
                     cursor: input.trim() ? "pointer" : "not-allowed",
                   }}
                 >

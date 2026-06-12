@@ -273,11 +273,11 @@ export function HomePage() {
   },[]);
 
   return (
-    <div className="min-h-screen" style={{background:"#050816"}}>
+    <div className="min-h-screen" style={{background:"#141C2E"}}>
       <Navbar/>
 
       {/* ── HERO ── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden" style={{background:"#050816"}}>
+      <section className="relative min-h-screen flex items-center overflow-hidden" style={{background:"#141C2E"}}>
         <div className="absolute inset-0 pointer-events-none"
           style={{background:"radial-gradient(ellipse 80% 60% at 60% 40%,rgba(59,130,246,0.06) 0%,transparent 70%),radial-gradient(ellipse 60% 50% at 20% 80%,rgba(245,158,11,0.04) 0%,transparent 70%)"}}/>
         <div className="absolute inset-0 pointer-events-none opacity-20"
@@ -359,12 +359,12 @@ export function HomePage() {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none" style={{background:"linear-gradient(transparent,#050816)"}}/>
+        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none" style={{background:"linear-gradient(transparent,#141C2E)"}}/>
         <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
       </section>
 
       {/* ── FEATURE OVERVIEW ── */}
-      <section className="relative py-28 overflow-hidden" style={{background:"#050816"}}>
+      <section className="relative py-28 overflow-hidden" style={{background:"#141C2E"}}>
         <div className="absolute inset-0 pointer-events-none"
           style={{background:"radial-gradient(ellipse 70% 60% at 50% 50%,rgba(59,130,246,0.04) 0%,transparent 70%)"}}/>
         <div className="max-w-6xl mx-auto px-8">

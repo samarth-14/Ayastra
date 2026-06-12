@@ -62,7 +62,7 @@ export function DashboardInventory() {
           <p style={{ color: "#8892a4", fontSize: "0.85rem" }}>{loading ? "Loading..." : `${items.length} SKUs across warehouses`}</p>
         </div>
         <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
-          style={{ display: "flex", alignItems: "center", gap: 6, background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#050816", border: "none", borderRadius: 10, padding: "0.6rem 1.25rem", fontFamily: "Space Grotesk,sans-serif", fontWeight: 700, cursor: "pointer" }}>
+          style={{ display: "flex", alignItems: "center", gap: 6, background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#141C2E", border: "none", borderRadius: 10, padding: "0.6rem 1.25rem", fontFamily: "Space Grotesk,sans-serif", fontWeight: 700, cursor: "pointer" }}>
           <Plus size={15} /> Add SKU
         </motion.button>
       </div>

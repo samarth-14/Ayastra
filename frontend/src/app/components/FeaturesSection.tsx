@@ -69,7 +69,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="relative py-32 overflow-hidden" style={{ background: "#050816" }}>
+    <section id="features" className="relative py-32 overflow-hidden" style={{ background: "#141C2E" }}>
       <div className="absolute inset-0 pointer-events-none"
         style={{
           background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(59,130,246,0.04) 0%, transparent 70%)",

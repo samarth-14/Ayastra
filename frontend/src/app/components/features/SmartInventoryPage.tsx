@@ -57,7 +57,7 @@ export function SmartInventoryPage() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ background: "#050816", minHeight: "100vh", color: "#e8eaf0" }}>
+    <div style={{ background: "#141C2E", minHeight: "100vh", color: "#e8eaf0" }}>
       {/* Top nav bar */}
       <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(5,8,22,0.92)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(59,130,246,0.12)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem", display: "flex", alignItems: "center", gap: "1rem", height: 60 }}>
@@ -88,7 +88,7 @@ export function SmartInventoryPage() {
               whileHover={{ scale: 1.04, boxShadow: "0 0 28px rgba(245,158,11,0.4)" }}
               whileTap={{ scale: 0.97 }}
               onClick={() => navigate("/login")}
-              style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#050816", border: "none", borderRadius: 10, padding: "0.75rem 2rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, cursor: "pointer" }}
+              style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#141C2E", border: "none", borderRadius: 10, padding: "0.75rem 2rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, cursor: "pointer" }}
             >
               Launch Inventory Module
             </motion.button>
@@ -249,7 +249,7 @@ export function SmartInventoryPage() {
             whileHover={{ scale: 1.05, boxShadow: "0 0 32px rgba(245,158,11,0.5)" }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/login")}
-            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#050816", border: "none", borderRadius: 12, padding: "1rem 2.5rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "1rem", cursor: "pointer" }}
+            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#141C2E", border: "none", borderRadius: 12, padding: "1rem 2.5rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "1rem", cursor: "pointer" }}
           >
             Launch Inventory Module →
           </motion.button>

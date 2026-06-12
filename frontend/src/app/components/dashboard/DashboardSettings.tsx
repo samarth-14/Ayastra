@@ -225,7 +225,7 @@ export function DashboardSettings() {
         {/* Save button */}
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid rgba(59,130,246,0.08)" }}>
           <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={handleSave}
-            style={{ display: "flex", alignItems: "center", gap: 6, background: saved ? "rgba(34,197,94,0.15)" : "linear-gradient(135deg,#F59E0B,#D97706)", color: saved ? "#22C55E" : "#050816", border: saved ? "1px solid rgba(34,197,94,0.35)" : "none", borderRadius: 10, padding: "0.6rem 1.5rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, cursor: "pointer", transition: "all 0.25s" }}>
+            style={{ display: "flex", alignItems: "center", gap: 6, background: saved ? "rgba(34,197,94,0.15)" : "linear-gradient(135deg,#F59E0B,#D97706)", color: saved ? "#22C55E" : "#141C2E", border: saved ? "1px solid rgba(34,197,94,0.35)" : "none", borderRadius: 10, padding: "0.6rem 1.5rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, cursor: "pointer", transition: "all 0.25s" }}>
             {saved ? <><CheckCircle size={14} /> Saved!</> : "Save Changes"}
           </motion.button>
         </div>
