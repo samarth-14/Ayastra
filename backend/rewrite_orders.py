@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+content = '''import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Search, Plus, MessageCircle, Truck, Clock, CheckCircle } from "lucide-react";
 import { getOrders } from "../../../api";
@@ -109,3 +109,8 @@ export function DashboardOrders() {
     </div>
   );
 }
+'''
+
+with open('../frontend/src/app/components/dashboard/DashboardOrders.tsx', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Done")
