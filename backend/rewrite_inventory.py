@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+content = '''import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Search, Plus, AlertTriangle } from "lucide-react";
 import { getInventory, getInventoryKPIs } from "../../../api";
@@ -138,3 +138,8 @@ export function DashboardInventory() {
     </div>
   );
 }
+'''
+
+with open('../frontend/src/app/components/dashboard/DashboardInventory.tsx', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Done")

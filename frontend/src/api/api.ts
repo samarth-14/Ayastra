@@ -53,37 +53,20 @@ export const getDashboardRevenueChart = async (companyId: string) => {
   return response.data;
 };
 // ============ INVENTORY ENDPOINTS ============
-export const getInventory = async () => {
-  const companyId = localStorage.getItem("company_id") || "1";
-  const response = await api.get("/inventory", {
-    params: { company_id: companyId },
-  });
+export const getInventory = async (companyId?: string) => {
+  const id = companyId || localStorage.getItem("company_id") || "1";
+  const response = await api.get("/inventory", { params: { company_id: id } });
   return response.data;
 };
-export const getInventoryKpis = async () => {
-  const companyId = localStorage.getItem("company_id") || "1";
-
-  const response = await api.get("/inventory", {
-    params: {
-      company_id: companyId,
-    },
-  });
-
-  return response.data;
-};
-
 export const getInventoryKPIs = async () => {
   const companyId = localStorage.getItem("company_id") || "1";
-
   const response = await api.get("/inventory/kpis", {
     params: {
       company_id: companyId,
     },
   });
-
   return response.data;
 };
-
 export const createInventoryItem = async (item: any) => {
   const response = await api.post("/inventory", item);
   return response.data;
