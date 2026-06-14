@@ -138,10 +138,10 @@ class InventoryUpdate(BaseModel):
 # --- Customer ---
 class CustomerCreate(BaseModel):
     name: str
-    phone: Optional[str]
-    email: Optional[str]
-    city: Optional[str]
-    gstin: Optional[str]
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    city: Optional[str] = None
+    gstin: Optional[str] = None
 
 # --- Order ---
 class OrderItemIn(BaseModel):
@@ -153,8 +153,8 @@ class OrderCreate(BaseModel):
     customer_id: int
     channel: Optional[str] = "manual"
     items: List[OrderItemIn]
-    eta: Optional[datetime]
-    notes: Optional[str]
+    eta: Optional[datetime] = None
+    notes: Optional[str] = None
 
 class OrderStatusUpdate(BaseModel):
     status: str
@@ -527,9 +527,17 @@ def delete_inventory(item_id: int, db: Session = Depends(get_db)):
 # ---------------------------------------------------------------------------
 
 @app.get("/products", tags=["Products"])
-def list_products(db: Session = Depends(get_db)):
-    products = db.query(Product).all()
-    return [{"id": p.id, "name": p.name, "sku": p.sku, "category": p.category, "unit": p.unit} for p in products]
+def list_products(company_id: Optional[int] = None, db: Session = Depends(get_db)):
+    if company_id:
+        # Return only products that have inventory for this company
+        items = db.query(InventoryItem).join(Warehouse).filter(
+            Warehouse.company_id == company_id
+        ).all()
+        product_ids = list({i.product_id for i in items})
+        products = db.query(Product).filter(Product.id.in_(product_ids)).all()
+    else:
+        products = db.query(Product).all()
+    return [{"id": p.id, "name": p.name, "sku": p.sku, "category": p.category, "unit": p.unit, "cost_price": None} for p in products]
 
 
 @app.get("/products/{product_id}", tags=["Products"])
@@ -638,7 +646,7 @@ def create_order(company_id: int, body: OrderCreate, db: Session = Depends(get_d
         order_number=order_number,
         customer_id=body.customer_id,
         company_id=company_id,
-        channel=body.channel,
+        channel=body.channel if body.channel in ['whatsapp', 'manual'] else 'manual',
         total_amount=total,
         eta=body.eta,
         notes=body.notes,
@@ -656,6 +664,13 @@ def create_order(company_id: int, body: OrderCreate, db: Session = Depends(get_d
         )
         db.add(line)
 
+    # Deduct inventory for each line item
+    for it in body.items:
+        inv = db.query(InventoryItem).filter(
+            InventoryItem.product_id == it.product_id
+        ).first()
+        if inv:
+            inv.quantity = max(0.0, inv.quantity - it.quantity)
     db.commit()
     db.refresh(order)
     return {"id": order.id, "order_number": order.order_number, "total": total}

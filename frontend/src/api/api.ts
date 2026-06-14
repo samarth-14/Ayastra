@@ -83,10 +83,10 @@ export const deleteInventoryItem = async (itemId: string) => {
 
 // ============ PRODUCTS ENDPOINTS ============
 export const getProducts = async () => {
-  const response = await api.get("/products");
+  const companyId = localStorage.getItem("company_id") || "1";
+  const response = await api.get("/products", { params: { company_id: companyId } });
   return response.data;
 };
-
 export const getProductById = async (productId: string) => {
   const response = await api.get(`/products/${productId}`);
   return response.data;
@@ -110,26 +110,26 @@ export const createWarehouse = async (warehouse: any) => {
 
 // ============ CUSTOMERS ENDPOINTS ============
 export const getCustomers = async () => {
-  const response = await api.get("/customers");
+  const companyId = localStorage.getItem("company_id") || "1";
+  const response = await api.get("/customers", { params: { company_id: companyId } });
   return response.data;
 };
-
 export const createCustomer = async (customer: any) => {
-  const response = await api.post("/customers", customer);
+  const { company_id, ...body } = customer;
+  const response = await api.post("/customers", body, { params: { company_id } });
   return response.data;
 };
-
 // ============ ORDERS ENDPOINTS ============
 export const getOrders = async () => {
-  const response = await api.get("/orders");
+  const companyId = localStorage.getItem("company_id") || "1";
+  const response = await api.get("/orders", { params: { company_id: companyId } });
   return response.data;
 };
-
 export const createOrder = async (order: any) => {
-  const response = await api.post("/orders", order);
+  const { company_id, ...body } = order;
+  const response = await api.post("/orders", body, { params: { company_id } });
   return response.data;
 };
-
 export const updateOrderStatus = async (
   orderId: string,
   status: string

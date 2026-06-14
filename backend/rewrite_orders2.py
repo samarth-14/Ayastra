@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+content = '''import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, Plus, Truck, Clock, CheckCircle, X, Trash2 } from "lucide-react";
 import { getOrders, createOrder, getCustomers, getProducts, createCustomer } from "../../../api";
@@ -34,7 +34,7 @@ export function DashboardOrders() {
   const [newCustName, setNewCustName] = useState("");
   const [newCustPhone, setNewCustPhone] = useState("");
   const [addingNewCust, setAddingNewCust] = useState(false);
-  const [channel, setChannel] = useState("manual");
+  const [channel, setChannel] = useState("direct");
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState([{ product_id: "", quantity: 1, unit_price: 0 }]);
   const [submitting, setSubmitting] = useState(false);
@@ -108,8 +108,7 @@ export function DashboardOrders() {
       setShowModal(false);
       fetchOrders();
     } catch (e: any) {
-      const detail = e?.response?.data?.detail;
-      setError(typeof detail === "string" ? detail : "Failed to create order. Check all fields.");
+      setError(e?.response?.data?.detail || "Failed to create order");
     } finally { setSubmitting(false); }
   };
 
@@ -273,8 +272,10 @@ export function DashboardOrders() {
                 <div>
                   <label style={LABEL_STYLE}>Channel</label>
                   <select value={channel} onChange={(e) => setChannel(e.target.value)} style={{ ...INPUT_STYLE, background:"#0b1120" }}>
-                    <option value="manual">Manual</option>
-                    <option value="whatsapp">WhatsApp</option>
+                    <option value="direct">Direct</option>
+                    <option value="online">Online</option>
+                    <option value="distributor">Distributor</option>
+                    <option value="export">Export</option>
                   </select>
                 </div>
                 <div>
@@ -307,3 +308,8 @@ export function DashboardOrders() {
     </div>
   );
 }
+'''
+
+with open('../frontend/src/app/components/dashboard/DashboardOrders.tsx', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Done")

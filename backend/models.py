@@ -157,9 +157,7 @@ class Order(Base):
              name="order_status"),
         default="pending"
     )
-    channel      = Column(
-        Enum("whatsapp", "manual", name="order_channel"), default="manual"
-    )
+    channel      = Column(String, default="manual")
     total_amount = Column(Float, default=0.0)
     order_date   = Column(DateTime, default=datetime.utcnow)
     eta          = Column(DateTime)
