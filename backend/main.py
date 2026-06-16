@@ -121,6 +121,35 @@ def validate_positive_number(value: float, field: str) -> float:
         raise HTTPException(status_code=422, detail=f"{field} must be positive")
     return value
 
+
+# ---------------------------------------------------------------------------
+# Rate Limiting (in-memory, per IP)
+# ---------------------------------------------------------------------------
+from collections import defaultdict
+import time as _time
+
+_rate_store = defaultdict(list)  # ip -> [timestamps]
+
+def rate_limit(ip: str, endpoint: str, max_calls: int, window_seconds: int):
+    """Raise 429 if IP exceeds max_calls in window_seconds."""
+    key = f"{ip}:{endpoint}"
+    now = _time.time()
+    window_start = now - window_seconds
+    # Purge old entries
+    _rate_store[key] = [t for t in _rate_store[key] if t > window_start]
+    if len(_rate_store[key]) >= max_calls:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Too many requests. Try again in {window_seconds} seconds."
+        )
+    _rate_store[key].append(now)
+
+def get_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
 # Simple in-memory rate limiter for login attempts
 login_attempts: dict = defaultdict(list)
 
@@ -329,7 +358,8 @@ def google_auth(body: dict, db: Session = Depends(get_db)):
     }
 
 @app.post("/auth/signup", tags=["Auth"])
-def signup(body: SignupRequest, db: Session = Depends(get_db)):
+def signup(body: SignupRequest, request: Request, db: Session = Depends(get_db)):
+    rate_limit(get_client_ip(request), "signup", max_calls=3, window_seconds=3600)
     # Validate and sanitize inputs
     body.email = validate_email(body.email)
     body.full_name = sanitize_string(body.full_name, 100)
@@ -361,6 +391,7 @@ def signup(body: SignupRequest, db: Session = Depends(get_db)):
 
 @app.post("/auth/login", response_model=LoginResponse, tags=["Auth"])
 def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
+    rate_limit(get_client_ip(request), "login", max_calls=5, window_seconds=60)
     check_rate_limit(request.client.host)
     user = db.query(User).filter(User.email == body.email).first()
     if not user:
@@ -484,7 +515,8 @@ def revenue_chart(company_id: int, days: int = 7, db: Session = Depends(get_db))
 
 
 @app.post("/inventory/simple", tags=["Inventory"])
-def add_simple_inventory(body: SimpleInventoryCreate, db: Session = Depends(get_db)):
+def add_simple_inventory(body: SimpleInventoryCreate, request: Request, db: Session = Depends(get_db)):
+    rate_limit(get_client_ip(request), "inventory_write", max_calls=30, window_seconds=60)
     warehouse = db.query(Warehouse).filter(
         Warehouse.company_id == body.company_id
     ).first()
@@ -515,7 +547,8 @@ def add_simple_inventory(body: SimpleInventoryCreate, db: Session = Depends(get_
 
 
 @app.get("/inventory", tags=["Inventory"])
-def list_inventory(
+def list_inventory(  # patched
+
     company_id: int,
     search: Optional[str] = None,
     status: Optional[str] = None,
@@ -565,7 +598,8 @@ def list_inventory(
 
 
 @app.get("/inventory/kpis", tags=["Inventory"])
-def inventory_kpis(company_id: int, db: Session = Depends(get_db)):
+def inventory_kpis(company_id: int, request: Request, db: Session = Depends(get_db)):
+    rate_limit(get_client_ip(request), "inventory_read", max_calls=60, window_seconds=60)
     """KPI cards for the Inventory page header."""
     items = (
         db.query(InventoryItem)
@@ -583,7 +617,8 @@ def inventory_kpis(company_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/inventory", tags=["Inventory"])
-def add_inventory(body: InventoryCreate, db: Session = Depends(get_db)):
+def add_inventory(body: InventoryCreate, request: Request, db: Session = Depends(get_db)):
+    rate_limit(get_client_ip(request), "inventory_write", max_calls=30, window_seconds=60)
     """Add a new inventory entry (SKU in warehouse)."""
     status = _compute_inventory_status(body.quantity, body.reorder_point or 100)
     item = InventoryItem(
@@ -722,7 +757,8 @@ def create_customer(company_id: int, body: CustomerCreate, db: Session = Depends
 # ---------------------------------------------------------------------------
 
 @app.get("/orders", tags=["Orders"])
-def list_orders(
+def list_orders(  # patched
+
     company_id: int,
     search: Optional[str] = None,
     status: Optional[str] = None,
@@ -756,7 +792,8 @@ def list_orders(
 
 
 @app.post("/orders", tags=["Orders"])
-def create_order(company_id: int, body: OrderCreate, db: Session = Depends(get_db)):
+def create_order(company_id: int, body: OrderCreate, request: Request, db: Session = Depends(get_db)):
+    rate_limit(get_client_ip(request), "orders_write", max_calls=20, window_seconds=60)
     """Create a new sales order with line items."""
     order_number = _generate_order_number(db)
     total = sum(i.quantity * i.unit_price for i in body.items)
