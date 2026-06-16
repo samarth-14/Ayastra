@@ -90,6 +90,37 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
+
+# ---------------------------------------------------------------------------
+# Input Sanitization & Validation
+# ---------------------------------------------------------------------------
+import re as _re
+
+def sanitize_string(value: str, max_length: int = 255) -> str:
+    """Remove dangerous characters and limit length."""
+    if not value:
+        return value
+    # Remove SQL injection patterns
+    value = _re.sub(r"[;'\"\\]", "", value)
+    # Remove script injection
+    value = _re.sub(r"<[^>]+>", "", value)
+    # Remove command injection chars
+    value = _re.sub(r"[|&;`$]", "", value)
+    return value.strip()[:max_length]
+
+def validate_email(email: str) -> str:
+    """Validate email format."""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not _re.match(pattern, email):
+        raise HTTPException(status_code=422, detail="Invalid email format")
+    return email.lower().strip()
+
+def validate_positive_number(value: float, field: str) -> float:
+    """Ensure number is positive."""
+    if value < 0:
+        raise HTTPException(status_code=422, detail=f"{field} must be positive")
+    return value
+
 # Simple in-memory rate limiter for login attempts
 login_attempts: dict = defaultdict(list)
 
@@ -299,6 +330,13 @@ def google_auth(body: dict, db: Session = Depends(get_db)):
 
 @app.post("/auth/signup", tags=["Auth"])
 def signup(body: SignupRequest, db: Session = Depends(get_db)):
+    # Validate and sanitize inputs
+    body.email = validate_email(body.email)
+    body.full_name = sanitize_string(body.full_name, 100)
+    body.company_name = sanitize_string(body.company_name, 200)
+    if len(body.password) < 8:
+        raise HTTPException(status_code=422, detail="Password must be at least 8 characters")
+    
     existing = db.query(User).filter(User.email == body.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -666,6 +704,12 @@ def list_customers(company_id: int, db: Session = Depends(get_db)):
 
 @app.post("/customers", tags=["Customers"])
 def create_customer(company_id: int, body: CustomerCreate, db: Session = Depends(get_db)):
+    # Validate inputs
+    body.name = sanitize_string(body.name, 200)
+    if body.email:
+        body.email = validate_email(body.email)
+    if body.phone:
+        body.phone = _re.sub(r'[^0-9+\-\s]', '', body.phone)[:20]
     c = Customer(company_id=company_id, **body.dict())
     db.add(c)
     db.commit()
