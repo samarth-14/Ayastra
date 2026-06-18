@@ -13,6 +13,7 @@ import { DashboardOrders } from "./components/dashboard/DashboardOrders";
 import { DashboardMarkets } from "./components/dashboard/DashboardMarkets";
 import { DashboardAnalytics } from "./components/dashboard/DashboardAnalytics";
 import { DashboardSettings } from "./components/dashboard/DashboardSettings";
+import { DashboardPredictions } from "./components/dashboard/DashboardPredictions";
 
 export const router = createBrowserRouter([
   { path: "/",                              Component: HomePage },
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: "markets",     Component: DashboardMarkets },
       { path: "analytics",   Component: DashboardAnalytics },
       { path: "settings",    Component: DashboardSettings },
+      { path: "predictions", Component: DashboardPredictions },
     ],
   },
 ]);

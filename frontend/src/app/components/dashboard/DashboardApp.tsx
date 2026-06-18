@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import { LayoutDashboard, Package, ShoppingCart, TrendingUp, BarChart3, Settings, LogOut, Home, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, TrendingUp, BarChart3, Settings, LogOut, Home, ChevronLeft, ChevronRight, BrainCircuit } from "lucide-react";
 import { AstraAvatar } from "../AstraAvatar";
 import { AstraChatPanel } from "../AstraChatPanel";
 
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { label: "Orders", icon: <ShoppingCart size={18} />, path: "/dashboard/orders" },
   { label: "Markets", icon: <TrendingUp size={18} />, path: "/dashboard/markets" },
   { label: "Analytics", icon: <BarChart3 size={18} />, path: "/dashboard/analytics" },
+  { label: "Predictions", icon: <BrainCircuit size={18} />, path: "/dashboard/predictions" },
   { label: "Settings", icon: <Settings size={18} />, path: "/dashboard/settings" },
 ];
 

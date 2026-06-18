@@ -291,3 +291,18 @@ class Alert(Base):
     message     = Column(String, nullable=False)
     is_read     = Column(Boolean, default=False)
     created_at  = Column(DateTime, default=datetime.utcnow)
+
+
+class MetalPrediction(Base):
+    __tablename__ = "metal_predictions"
+
+    id               = Column(Integer, primary_key=True, index=True)
+    metal            = Column(String, nullable=False)
+    prediction       = Column(String, nullable=False)      # UP / DOWN
+    confidence       = Column(Float, nullable=False)
+    current_price    = Column(Float, nullable=False)
+    predicted_price  = Column(Float, nullable=False)
+    actual_price     = Column(Float, nullable=True)        # filled next day
+    correct          = Column(Boolean, nullable=True)      # filled next day
+    recommendation   = Column(String, nullable=False)
+    created_at       = Column(DateTime, default=datetime.utcnow)

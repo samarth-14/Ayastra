@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 import os, math, httpx
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+from api.prediction_routes import router as prediction_router
 from fastapi import FastAPI, Depends, HTTPException, Query, Request
 from collections import defaultdict
 import time
@@ -165,6 +169,8 @@ def check_rate_limit(ip: str, max_attempts: int = 5, window: int = 300):
             detail="Too many login attempts. Please wait 5 minutes."
         )
     login_attempts[ip].append(now)
+
+app.include_router(prediction_router)
 
 app.add_middleware(
     CORSMiddleware,
