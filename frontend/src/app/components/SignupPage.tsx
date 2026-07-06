@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { signUpWithEmail } from "../../firebase";
+import { signUpWithEmail, describeFirebaseAuthError, deleteCurrentFirebaseUser } from "../../firebase";
 import api from "../../api/api";
+
+// Keep the client's minimum in lock-step with the backend (main.py signup
+// requires >= 8). Firebase alone only requires 6 — the gap silently creates
+// orphaned Firebase users for 6–7 char passwords.
+const MIN_PASSWORD_LEN = 8;
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -13,18 +18,44 @@ export function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      // Create user in Firebase
-      await signUpWithEmail(email, password);
+    if (loading) return; // guard against double-submit (no StrictMode, but be safe)
+    console.debug("[signup] STEP 1 — entering handleSignup");
 
-      // Create user + company in our backend
+    // Validate BEFORE touching Firebase so a too-short password can't create an
+    // orphaned Firebase account that the backend then rejects.
+    const cleanEmail = email.trim();
+    if (password.length < MIN_PASSWORD_LEN) {
+      alert(`Password must be at least ${MIN_PASSWORD_LEN} characters.`);
+      return;
+    }
+
+    setLoading(true);
+
+    // ── Phase 1: Firebase ────────────────────────────────────────────────
+    let firebaseCreated = false;
+    try {
+      console.debug("[signup] STEP 2 — calling Firebase createUser", { email: cleanEmail, passwordLength: password.length });
+      await signUpWithEmail(cleanEmail, password); // helper trims + logs
+      firebaseCreated = true;
+      console.debug("[signup] STEP 3 — Firebase success");
+    } catch (error) {
+      // Firebase failure: nothing was written to the backend, no rollback needed.
+      const fb = describeFirebaseAuthError(error, "signup:firebase");
+      alert(fb?.userMessage ?? "Signup failed. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // ── Phase 2: backend (must be atomic with Phase 1) ───────────────────
+    try {
+      console.debug("[signup] STEP 4 — calling backend POST /auth/signup");
       const response = await api.post("/auth/signup", {
         full_name: fullName,
-        email: email,
+        email: cleanEmail,
         password: password,
         company_name: companyName,
       });
+      console.debug("[signup] STEP 5 — backend success", { status: response.status, data: response.data });
 
       const data = response.data;
       localStorage.setItem("token", data.token);
@@ -32,10 +63,43 @@ export function SignupPage() {
       localStorage.setItem("user_id", String(data.user_id));
       localStorage.setItem("name", data.full_name);
 
-      navigate("/dashboard");
+      // Fresh signup → drive the user through mandatory onboarding first.
+      // "false" is what the dashboard guard checks to block access.
+      localStorage.setItem(
+        "onboarding_completed",
+        data.is_onboarding_completed ? "true" : "false",
+      );
+      if (data.marketplace_role) {
+        localStorage.setItem("marketplace_role", data.marketplace_role);
+      }
+
+      console.debug("[signup] STEP 6 — navigating");
+      navigate(data.is_onboarding_completed ? "/dashboard" : "/onboarding");
     } catch (error: any) {
-      console.error("Signup failed:", error);
-      alert(error?.response?.data?.detail || "Signup failed. Try again.");
+      // Backend errors are axios-shaped: error.response.data / error.response.status.
+      // (Do NOT read error.code here — that's the Firebase shape.)
+      console.error("[signup] backend failed — full error object:", error);
+      console.error("[signup] response.status:", error?.response?.status);
+      console.error("[signup] response.data:", error?.response?.data);
+
+      // CRITICAL: Firebase already created the account. Roll it back so the next
+      // attempt doesn't hit auth/email-already-in-use for a user that never
+      // finished signing up.
+      if (firebaseCreated) {
+        await deleteCurrentFirebaseUser();
+      }
+
+      const status = error?.response?.status;
+      const backendDetail = error?.response?.data?.detail;
+      if (status === 429) {
+        alert(backendDetail || "Too many signup attempts. Please wait and try again.");
+      } else if (error?.response) {
+        alert(backendDetail || "Signup failed on our server. Please try again.");
+      } else {
+        // No response object → network/CORS failure (net::ERR_FAILED). The
+        // request never reached (or never returned from) the backend.
+        alert("Could not reach the server. Check your connection and that the backend is running.");
+      }
     } finally {
       setLoading(false);
     }

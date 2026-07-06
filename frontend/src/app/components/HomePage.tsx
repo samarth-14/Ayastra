@@ -128,6 +128,12 @@ const FEATURES = [
     href:"/features/business-analytics", accent:"#8B5CF6",
     bullets:["Revenue & profit tracking","Demand forecasting","Business health score"],
   },
+  {
+    icon:"♻️", title:"Scrap Optimizer",
+    desc:"AI-powered buyer discovery and scrap price optimization.",
+    href:"/features/scrap-optimizer", accent:"#22C55E",
+    bullets:["AI Price Prediction","Buyer Comparison","Market Trends"],
+  },
 ];
 
 /* ── Glance preview (static visual) ── */

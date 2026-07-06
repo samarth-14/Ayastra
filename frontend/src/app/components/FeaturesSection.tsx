@@ -26,7 +26,7 @@ const features = [
         <path d="M14 22 h10 v-6" stroke="#3B82F6" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.4"/>
       </svg>
     ),
-    title: "Scrap Optimization",
+    title: "Scrap Optimizer",
     tagline: "Maximize scrap value",
     description: "Match your scrap inventory with the best buyers across India. AI identifies optimal selling windows based on market trends and buyer demand signals.",
     bullets: ["Find the best buyer instantly", "Optimize selling time with AI", "Maximize scrap value per tonne"],

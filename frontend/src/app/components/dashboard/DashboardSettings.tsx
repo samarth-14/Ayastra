@@ -1,7 +1,89 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { User, Bell, Shield, Webhook, Building, CheckCircle } from "lucide-react";
+import { User, Bell, Shield, Webhook, Building, CheckCircle, Loader2 } from "lucide-react";
 import { getUserProfile, updateUserProfile, getUserNotifications, updateUserNotifications, getCompanySettings, updateCompanySettings, getIntegrations, updateIntegration } from "../../../api";
+import { getMarketplaceProfile, updateMarketplaceProfile } from "../../../api";
+
+/* Marketplace profile — the source of truth for buying-offer auto-prefill.
+   Editing here means every FUTURE offer uses the new values; already-published
+   offers keep their snapshot (enforced server-side). */
+function MarketplaceProfileCard() {
+  const FIELDS: { key: string; label: string; optional?: boolean }[] = [
+    { key: "company_name", label: "Company Name" },
+    { key: "company_address", label: "Company Address" },
+    { key: "city", label: "City" },
+    { key: "state", label: "State" },
+    { key: "gst_number", label: "GST Number", optional: true },
+    { key: "contact_number", label: "Contact Number" },
+  ];
+  const [values, setValues] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
+
+  useEffect(() => {
+    getMarketplaceProfile()
+      .then((p) => setValues({
+        company_name: p.company_name || "", company_address: p.company_address || "",
+        city: p.city || "", state: p.state || "", gst_number: p.gst_number || "",
+        contact_number: p.contact_number || "",
+      }))
+      .catch(() => { /* leave blank */ })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const save = async () => {
+    setSaving(true); setSavedOk(false);
+    try {
+      await updateMarketplaceProfile(values);
+      setSavedOk(true);
+      setTimeout(() => setSavedOk(false), 2500);
+    } catch {
+      alert("Could not save marketplace profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(59,130,246,0.1)" }}>
+      <h3 style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: "#e8eaf0", marginBottom: 4 }}>Marketplace Profile</h3>
+      <p style={{ color: "#8892a4", fontSize: "0.8rem", fontFamily: "'Inter',sans-serif", marginBottom: "1.25rem" }}>
+        Used to auto-fill your buying offers. Updates apply to future offers; published offers keep their original details.
+      </p>
+      {loading ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#8892a4", fontSize: "0.85rem", fontFamily: "'Inter',sans-serif" }}>
+          <Loader2 size={16} className="spin" /> Loading profile…
+        </div>
+      ) : (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            {FIELDS.map((f) => (
+              <div key={f.key}>
+                <label style={{ display: "block", color: "#8892a4", fontSize: "0.75rem", fontFamily: "'Inter',sans-serif", marginBottom: 6 }}>
+                  {f.label}{f.optional && <span style={{ color: "#4B5563" }}> (optional)</span>}
+                </label>
+                <input
+                  value={values[f.key] || ""}
+                  onChange={(e) => setValues((p) => ({ ...p, [f.key]: e.target.value }))}
+                  style={{ width: "100%", background: "rgba(5,8,22,0.6)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: 8, padding: "0.55rem 0.75rem", color: "#e8eaf0", fontFamily: "'Inter',sans-serif", fontSize: "0.85rem", outline: "none", boxSizing: "border-box" }}
+                  onFocus={(e) => (e.target.style.borderColor = "rgba(245,158,11,0.5)")}
+                  onBlur={(e) => (e.target.style.borderColor = "rgba(59,130,246,0.15)")}
+                />
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={save}
+              style={{ display: "flex", alignItems: "center", gap: 6, background: savedOk ? "rgba(34,197,94,0.15)" : "rgba(59,130,246,0.15)", color: savedOk ? "#22C55E" : "#93C5FD", border: `1px solid ${savedOk ? "rgba(34,197,94,0.35)" : "rgba(59,130,246,0.3)"}`, borderRadius: 10, padding: "0.5rem 1.2rem", fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer" }}>
+              {saving ? <><Loader2 size={13} className="spin" /> Saving…</> : savedOk ? <><CheckCircle size={13} /> Saved!</> : "Save Marketplace Profile"}
+            </motion.button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 const SECTIONS = [
   { id: "profile", label: "Profile", icon: <User size={16} /> },
@@ -219,6 +301,9 @@ export function DashboardSettings() {
                 </div>
               ))}
             </div>
+
+            {/* Marketplace profile — drives buying-offer auto-prefill */}
+            <MarketplaceProfileCard />
           </motion.div>
         )}
 

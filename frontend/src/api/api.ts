@@ -44,6 +44,175 @@ export const login = async (email: string, password: string) => {
   }
   return response.data;
 };
+
+// ============ ONBOARDING ============
+export type MarketplaceRole = "seller" | "buyer" | "both";
+
+export interface CompanyProfile {
+  full_name?: string;
+  company_name?: string;
+  company_address?: string;
+  city?: string;
+  state?: string;
+  gst_number?: string;
+  contact_number?: string;
+}
+
+export const submitOnboarding = async (
+  marketplaceRole: MarketplaceRole,
+  profile: CompanyProfile = {},
+) => {
+  const response = await api.post("/api/users/onboarding", {
+    marketplace_role: marketplaceRole,
+    ...profile,
+  });
+  // Persist locally so the dashboard guard and role-based UI can read it
+  // without an extra round-trip.
+  localStorage.setItem("onboarding_completed", "true");
+  localStorage.setItem("marketplace_role", marketplaceRole);
+  if (profile.full_name) {
+    localStorage.setItem("name", profile.full_name);
+  }
+  return response.data;
+};
+
+// ============ MARKETPLACE ============
+export interface MarketplaceProfile extends CompanyProfile {
+  full_name?: string;
+  email?: string;
+  marketplace_role?: MarketplaceRole;
+}
+
+export interface BuyerOffer {
+  id: number;
+  company_name: string;
+  company_address: string;
+  city: string;
+  state: string;
+  gst_number: string;
+  contact_number: string;
+  metal: string;
+  buying_price: number;
+  quantity: number;
+  unit: string;
+  settlement_time: string;
+  notes: string;
+  images: string[];
+  created_at: string | null;
+}
+
+export interface ScrapListing {
+  id: number;
+  seller_id: number;
+  metal: string;
+  quantity: number;
+  unit: string;
+  grade: string;
+  description: string;
+  city: string;
+  state: string;
+  images: string[];
+  created_at: string | null;
+}
+
+export const getMarketplaceProfile = async (): Promise<MarketplaceProfile> => {
+  const { data } = await api.get("/api/users/profile");
+  return data;
+};
+
+export const updateMarketplaceProfile = async (profile: MarketplaceProfile): Promise<MarketplaceProfile> => {
+  const { data } = await api.put("/api/users/profile", profile);
+  return data;
+};
+
+// Multipart helpers — append primitive fields + image files onto FormData.
+function buildFormData(fields: Record<string, string | number | undefined | null>, images: File[]): FormData {
+  const fd = new FormData();
+  Object.entries(fields).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== "") fd.append(k, String(v));
+  });
+  images.forEach((file) => fd.append("images", file));
+  return fd;
+}
+
+export const createScrapListing = async (
+  fields: { metal: string; quantity: number; unit: string; grade?: string; description?: string; city?: string; state?: string },
+  images: File[],
+): Promise<ScrapListing> => {
+  const { data } = await api.post("/api/scrap-listings", buildFormData(fields, images), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data.listing;
+};
+
+export const getScrapListings = async (mine = false): Promise<ScrapListing[]> => {
+  const { data } = await api.get("/api/scrap-listings", { params: mine ? { mine: true } : {} });
+  return data.listings;
+};
+
+export const createBuyerOffer = async (
+  fields: {
+    metal: string; buying_price: number; quantity: number; unit: string;
+    settlement_time?: string; notes?: string;
+    company_name?: string; company_address?: string; city?: string; state?: string; gst_number?: string; contact_number?: string;
+  },
+  images: File[],
+): Promise<BuyerOffer> => {
+  const { data } = await api.post("/api/buyer-offers", buildFormData(fields, images), {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data.offer;
+};
+
+export const getBuyerOffers = async (): Promise<BuyerOffer[]> => {
+  const { data } = await api.get("/api/buyer-offers");
+  return data.offers;
+};
+
+// Real 7-day buying/selling activity for the Scrap Optimizer trend chart.
+export interface MarketplaceActivityMetal {
+  metal: string;
+  quantity: number;
+  unit: string;
+  price: number;   // effective ₹ per unit
+  value: number;   // total ₹ for this metal that day
+}
+export interface MarketplaceActivityDay {
+  date: string;    // ISO date
+  label: string;   // weekday short (Mon…Sun)
+  total: number;   // total ₹ value that day
+  metals: MarketplaceActivityMetal[];
+}
+export interface MarketplaceActivitySeries {
+  series: MarketplaceActivityDay[];
+  count: number;   // number of underlying records in the window
+}
+export interface MarketplaceAnalytics {
+  role: MarketplaceRole | null;
+  purchases: MarketplaceActivitySeries;
+  sales: MarketplaceActivitySeries;
+}
+
+export const getMarketplaceAnalytics = async (): Promise<MarketplaceAnalytics> => {
+  const { data } = await api.get("/api/marketplace/analytics");
+  return data;
+};
+
+// Highest active buyer offer — powers the seller's "Best Buyer's Rate" card.
+export interface BestBuyerRate {
+  best_rate: number | null;
+  metal: string | null;
+  unit: string | null;
+  company_name: string | null;
+  city: string | null;
+  state: string | null;
+}
+
+export const getBestBuyerRate = async (): Promise<BestBuyerRate> => {
+  const { data } = await api.get("/api/marketplace/best-buyer-rate");
+  return data;
+};
+
 // ============ DASHBOARD ENDPOINTS ============
 export const getDashboardSummary = async (companyId: string) => {
   const response = await api.get("/dashboard/summary", { params: { company_id: companyId } });

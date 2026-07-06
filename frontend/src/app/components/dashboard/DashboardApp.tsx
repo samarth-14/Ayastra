@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router";
+import { Outlet, useNavigate, useLocation, Navigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
-import { LayoutDashboard, Package, ShoppingCart, TrendingUp, BarChart3, Settings, LogOut, Home, ChevronLeft, ChevronRight, BrainCircuit } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, TrendingUp, BarChart3, Settings, LogOut, Home, ChevronLeft, ChevronRight, BrainCircuit, Recycle } from "lucide-react";
 import { AstraAvatar } from "../AstraAvatar";
 import { AstraChatPanel } from "../AstraChatPanel";
 
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: "Markets", icon: <TrendingUp size={18} />, path: "/dashboard/markets" },
   { label: "Analytics", icon: <BarChart3 size={18} />, path: "/dashboard/analytics" },
   { label: "Predictions", icon: <BrainCircuit size={18} />, path: "/dashboard/predictions" },
+  { label: "Scrap Optimizer", icon: <Recycle size={18} />, path: "/dashboard/scrap-optimizer" },
   { label: "Settings", icon: <Settings size={18} />, path: "/dashboard/settings" },
 ];
 
@@ -20,6 +21,13 @@ export function DashboardApp() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+
+  // Onboarding gate: a freshly signed-up user is flagged "false" and cannot
+  // reach the dashboard until they pick a marketplace role. Existing users
+  // (no flag) and completed users pass straight through.
+  if (localStorage.getItem("onboarding_completed") === "false") {
+    return <Navigate to="/onboarding" replace />;
+  }
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";

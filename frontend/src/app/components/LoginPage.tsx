@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router";
-import { signInWithGoogle, signInWithEmail } from "../../firebase";
+import { signInWithGoogle, signInWithEmail, describeFirebaseAuthError } from "../../firebase";
 /* ─── Particle Globe (same engine as HeroSection) ─── */
 interface Particle {
   x: number; y: number; z: number;
@@ -207,10 +207,16 @@ export function LoginPage() {
       localStorage.setItem("name", user.displayName || user.email || "");
       localStorage.setItem("user_id", user.uid);
       localStorage.setItem("company_id", "1");
+      // Email/password login authenticates against Firebase only (no backend
+      // JWT), so onboarding status can't be checked here. Treat as an existing
+      // user and go straight to the dashboard — onboarding is enforced at the
+      // signup / Google-login paths where a backend token is available.
+      localStorage.setItem("onboarding_completed", "true");
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      // Firebase errors carry .code / .message (NOT error.response.data.detail).
+      const fb = describeFirebaseAuthError(error, "login");
+      alert(fb?.userMessage ?? "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -238,10 +244,21 @@ export function LoginPage() {
       localStorage.setItem("name", data.full_name);
       localStorage.setItem("user_id", String(data.user_id));
       localStorage.setItem("company_id", String(data.company_id));
-      navigate("/dashboard");
+
+      // Backend tells us whether onboarding is done. New Google users land on
+      // the onboarding flow; returning users go straight to the dashboard.
+      const done = !!data.is_onboarding_completed;
+      localStorage.setItem("onboarding_completed", done ? "true" : "false");
+      if (data.marketplace_role) {
+        localStorage.setItem("marketplace_role", data.marketplace_role);
+      }
+      navigate(done ? "/dashboard" : "/onboarding");
     } catch (error) {
+      // Popup/redirect Firebase errors (e.g. auth/popup-closed-by-user,
+      // auth/operation-not-allowed) surface via .code here too.
+      const fb = describeFirebaseAuthError(error, "google-login");
       console.error("Google login failed:", error);
-      alert("Google login failed.");
+      alert(fb?.userMessage ?? "Google login failed.");
     } finally {
       setLoading(false);
     }
