@@ -24,6 +24,8 @@ class Company(Base):
     name        = Column(String, nullable=False)
     gstin       = Column(String, unique=True)
     address     = Column(String)
+    city        = Column(String)   # marketplace profile
+    state       = Column(String)   # marketplace profile
     industry    = Column(String)
     created_at  = Column(DateTime, default=datetime.utcnow)
 
@@ -43,6 +45,11 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     is_active    = Column(Boolean, default=True)
     created_at   = Column(DateTime, default=datetime.utcnow)
+
+    # Onboarding — set once, right after the first successful signup.
+    is_onboarding_completed = Column(Boolean, default=False, nullable=False)
+    marketplace_role        = Column(String(20))   # "seller" | "buyer" | "both"
+    contact_number          = Column(String)       # marketplace profile
 
     company      = relationship("Company", back_populates="users")
     settings     = relationship("UserSettings", uselist=False, back_populates="user")
@@ -306,3 +313,72 @@ class MetalPrediction(Base):
     correct          = Column(Boolean, nullable=True)      # filled next day
     recommendation   = Column(String, nullable=False)
     created_at       = Column(DateTime, default=datetime.utcnow)
+
+
+# ---------------------------------------------------------------------------
+# Scrap Marketplace
+# ---------------------------------------------------------------------------
+
+class ScrapInventory(Base):
+    """A seller's scrap listing. Owned by the seller (User)."""
+    __tablename__ = "scrap_inventory"
+
+    id          = Column(Integer, primary_key=True, index=True)
+    seller_id   = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    metal       = Column(String, nullable=False)   # Copper / Aluminium / ...
+    quantity    = Column(Float, nullable=False)
+    unit        = Column(String, nullable=False)    # KG / MT / Ton
+    grade       = Column(String)
+    description = Column(Text)
+    city        = Column(String)
+    state       = Column(String)
+    is_active   = Column(Boolean, default=True, nullable=False)
+    created_at  = Column(DateTime, default=datetime.utcnow)
+    seller      = relationship("User")
+    images      = relationship(
+        "ScrapInventoryImage", back_populates="listing",
+        cascade="all, delete-orphan",
+    )
+class ScrapInventoryImage(Base):
+    __tablename__ = "scrap_inventory_images"
+    id                  = Column(Integer, primary_key=True, index=True)
+    scrap_inventory_id  = Column(Integer, ForeignKey("scrap_inventory.id"), nullable=False, index=True)
+    image_url           = Column(String, nullable=False)
+    created_at          = Column(DateTime, default=datetime.utcnow)
+    listing = relationship("ScrapInventory", back_populates="images")
+class BuyerPrice(Base):
+    """A buyer's buying offer. Company details are SNAPSHOT at creation time so
+    later profile edits do not mutate previously published offers."""
+    __tablename__ = "buyer_prices"
+    id              = Column(Integer, primary_key=True, index=True)
+    buyer_id        = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    # Snapshot of the buyer's profile at publish time.
+    company_name    = Column(String)
+    company_address = Column(String)
+    city            = Column(String)
+    state           = Column(String)
+    gst_number      = Column(String)
+    contact_number  = Column(String)
+    # Per-offer (dynamic) fields.
+    metal           = Column(String, nullable=False)
+    buying_price    = Column(Float, nullable=False)
+    quantity        = Column(Float, nullable=False)
+    unit            = Column(String, nullable=False)
+    settlement_time = Column(String)   # Immediate / Within 24 Hours / ...
+    notes           = Column(Text)
+    is_active       = Column(Boolean, default=True, nullable=False)
+    created_at      = Column(DateTime, default=datetime.utcnow)
+    buyer           = relationship("User")
+    images          = relationship(
+        "BuyerPriceImage", back_populates="offer",
+        cascade="all, delete-orphan",
+    )
+class BuyerPriceImage(Base):
+    __tablename__ = "buyer_price_images"
+    id = Column(Integer, primary_key=True, index=True)
+    buyer_price_id = Column(Integer, ForeignKey("buyer_prices.id"), nullable=False, index=True)
+    image_url = Column(String, nullable=False)
+    storage_path = Column(String, nullable=False)
+    display_order = Column(Integer, default=1)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    offer = relationship("BuyerPrice", back_populates="images")

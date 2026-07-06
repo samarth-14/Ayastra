@@ -73,7 +73,7 @@ export function BusinessAnalyticsPage() {
   const overallColor = overallScore >= 80 ? "#22C55E" : overallScore >= 60 ? "#F59E0B" : "#EF4444";
 
   return (
-    <div style={{ background: "#050816", minHeight: "100vh", color: "#e8eaf0" }}>
+    <div style={{ background: "#141C2E", minHeight: "100vh", color: "#e8eaf0" }}>
       {/* Top nav */}
       <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(5,8,22,0.92)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(59,130,246,0.12)" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 2rem", display: "flex", alignItems: "center", gap: "1rem", height: 60 }}>

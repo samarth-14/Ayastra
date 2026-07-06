@@ -26,7 +26,7 @@ const features = [
         <path d="M14 22 h10 v-6" stroke="#3B82F6" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.4"/>
       </svg>
     ),
-    title: "Scrap Optimization",
+    title: "Scrap Optimizer",
     tagline: "Maximize scrap value",
     description: "Match your scrap inventory with the best buyers across India. AI identifies optimal selling windows based on market trends and buyer demand signals.",
     bullets: ["Find the best buyer instantly", "Optimize selling time with AI", "Maximize scrap value per tonne"],
@@ -69,7 +69,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="relative py-32 overflow-hidden" style={{ background: "#050816" }}>
+    <section id="features" className="relative py-32 overflow-hidden" style={{ background: "#141C2E" }}>
       <div className="absolute inset-0 pointer-events-none"
         style={{
           background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(59,130,246,0.04) 0%, transparent 70%)",

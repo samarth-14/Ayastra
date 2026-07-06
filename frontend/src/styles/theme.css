@@ -1,27 +1,27 @@
 @custom-variant dark (&:is(.dark *));
-
+ 
 :root {
   --font-size: 16px;
-  --background: #050816;
+  --background: #141C2E;
   --foreground: #e8eaf0;
-  --card: rgba(11, 17, 32, 0.8);
+  --card: rgba(34, 46, 72, 0.85);
   --card-foreground: #e8eaf0;
-  --popover: #0B1120;
+  --popover: #161F33;
   --popover-foreground: #e8eaf0;
   --primary: #F59E0B;
-  --primary-foreground: #050816;
+  --primary-foreground: #141C2E;
   --secondary: #3B82F6;
   --secondary-foreground: #ffffff;
-  --muted: #111827;
-  --muted-foreground: #8892a4;
+  --muted: #25324D;
+  --muted-foreground: #9aa5ba;
   --accent: #F59E0B;
-  --accent-foreground: #050816;
+  --accent-foreground: #141C2E;
   --destructive: #EF4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(59, 130, 246, 0.15);
-  --input: rgba(255, 255, 255, 0.05);
-  --input-background: rgba(255, 255, 255, 0.05);
-  --switch-background: #1f2a3f;
+  --border: rgba(59, 130, 246, 0.25);
+  --input: rgba(255, 255, 255, 0.08);
+  --input-background: rgba(255, 255, 255, 0.08);
+  --switch-background: #2A3550;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
   --ring: #F59E0B;
@@ -35,7 +35,7 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: #1A2438;
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: #030213;
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -44,26 +44,26 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
-
+ 
 .dark {
-  --background: #050816;
+  --background: #141C2E;
   --foreground: #e8eaf0;
-  --card: rgba(11, 17, 32, 0.8);
+  --card: rgba(34, 46, 72, 0.85);
   --card-foreground: #e8eaf0;
-  --popover: #0B1120;
+  --popover: #161F33;
   --popover-foreground: #e8eaf0;
   --primary: #F59E0B;
-  --primary-foreground: #050816;
+  --primary-foreground: #141C2E;
   --secondary: #3B82F6;
   --secondary-foreground: #ffffff;
-  --muted: #111827;
-  --muted-foreground: #8892a4;
+  --muted: #25324D;
+  --muted-foreground: #9aa5ba;
   --accent: #F59E0B;
-  --accent-foreground: #050816;
+  --accent-foreground: #141C2E;
   --destructive: #EF4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(59, 130, 246, 0.15);
-  --input: rgba(255, 255, 255, 0.05);
+  --border: rgba(59, 130, 246, 0.25);
+  --input: rgba(255, 255, 255, 0.08);
   --ring: #F59E0B;
   --font-weight-medium: 600;
   --font-weight-normal: 400;
@@ -72,16 +72,16 @@
   --chart-3: #22C55E;
   --chart-4: #8B5CF6;
   --chart-5: #EF4444;
-  --sidebar: #0B1120;
+  --sidebar: #1A2438;
   --sidebar-foreground: #e8eaf0;
   --sidebar-primary: #F59E0B;
-  --sidebar-primary-foreground: #050816;
-  --sidebar-accent: #111827;
+  --sidebar-primary-foreground: #141C2E;
+  --sidebar-accent: #1A2438;
   --sidebar-accent-foreground: #e8eaf0;
-  --sidebar-border: rgba(59, 130, 246, 0.15);
+  --sidebar-border: rgba(59, 130, 246, 0.18);
   --sidebar-ring: #F59E0B;
 }
-
+ 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -122,67 +122,67 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
-
+ 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
+ 
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
-    background-color: #050816;
+    background-color: #141C2E;   
   }
-
+ 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', sans-serif;
   }
-
+ 
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
   */
-
+ 
   html {
     font-size: var(--font-size);
   }
-
+ 
   h1 {
     font-size: var(--text-2xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
-
+ 
   h2 {
     font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
-
+ 
   h3 {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
-
+ 
   h4 {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
-
+ 
   label {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
-
+ 
   button {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
-
+ 
   input {
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);

@@ -23,7 +23,7 @@ const botReplies: Record<string, string> = {
   copper: "📈 **Copper Forecast:** Based on LME data + India import trends, copper is projected to rise **+2.8–4.1%** over the next 30 days. Key driver: China infrastructure spending + monsoon construction demand in Western India. Recommended action: Increase copper inventory by 15–20 MT before Thursday.",
   demand: "🔮 **Demand Forecast:** Steel demand is expected to surge **+18%** in Q3 driven by infrastructure projects in Maharashtra & Gujarat. Aluminum demand will dip slightly (−3%) due to auto sector slowdown. I recommend adjusting your procurement mix accordingly.",
   inventory: "📦 **Inventory Analysis:** Your Brass Sheets are critically low (320/800 MT — 40%). Copper Rods are healthy at 84%. Nickel Ingots at 24% — immediate reorder recommended. I've flagged 3 preferred suppliers for you. Shall I initiate a reorder request?",
-  scrap: "♻️ **Scrap Optimization:** Current HMS-1 buyer demand is highest in Rajkot and Surat markets. Selling now yields **₹38,400/MT** vs a 7-day average of ₹37,100. That's +3.5% premium. I've identified 4 verified buyers with same-day pickup. Want me to connect you?",
+  scrap: "♻️ **Scrap Optimizer:** Current HMS-1 buyer demand is highest in Rajkot and Surat markets. Selling now yields **₹38,400/MT** vs a 7-day average of ₹37,100. That's +3.5% premium. I've identified 4 verified buyers with same-day pickup. Want me to connect you?",
   report: "📊 **Monthly Summary:** Revenue ₹42.7L (+18.2% MoM). Top performer: Copper Rods (₹18.4L). Scrap recycling saved ₹3.2L in procurement costs. AI-triggered orders: 47. Manual errors avoided: 12. Overall business health score: **84/100**. Full PDF report ready to export.",
   market: "🌐 **Market Insights Today:** LME Copper +0.8% overnight. Zinc hit 3-month high on European energy news. India steel mills running at 91% capacity — bullish for scrap pricing. Watch Nickel — geopolitical supply risk from Indonesia export policy. Recommend holding Nickel positions.",
 };
@@ -230,7 +230,7 @@ export function AstraChatPanel({ open, onClose }: Props) {
                     </div>
                   ) : (
                     <div className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center mt-0.5"
-                      style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#050816", fontWeight: 700, fontSize: "0.65rem", fontFamily: "'Space Grotesk', sans-serif" }}>
+                      style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#141C2E", fontWeight: 700, fontSize: "0.65rem", fontFamily: "'Space Grotesk', sans-serif" }}>
                       YOU
                     </div>
                   )}
@@ -333,7 +333,7 @@ export function AstraChatPanel({ open, onClose }: Props) {
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200"
                   style={{
                     background: input.trim() ? "linear-gradient(135deg, #F59E0B, #D97706)" : "rgba(59,130,246,0.1)",
-                    color: input.trim() ? "#050816" : "#4B5563",
+                    color: input.trim() ? "#141C2E" : "#4B5563",
                     cursor: input.trim() ? "pointer" : "not-allowed",
                   }}
                 >

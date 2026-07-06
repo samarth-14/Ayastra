@@ -9,6 +9,7 @@ const FEATURES = [
   { label: "WhatsApp Automation",     href: "/features/whatsapp-automation", icon: "💬", desc: "AI-powered order processing" },
   { label: "Metal Price Intelligence", href: "/features/metal-price",        icon: "📈", desc: "Bloomberg-grade market data" },
   { label: "Business Analytics",      href: "/features/business-analytics",  icon: "📊", desc: "Enterprise-grade insights" },
+  { label: "Scrap Optimizer",         href: "/features/scrap-optimizer",     icon: "♻️", desc: "AI-powered buyer discovery and scrap price optimization." },
 ];
 
 export function Navbar() {

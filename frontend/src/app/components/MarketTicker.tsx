@@ -61,7 +61,7 @@ export function MarketTicker() {
       <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 px-3 py-1 rounded text-xs font-bold"
         style={{
           background: "linear-gradient(135deg, #F59E0B, #D97706)",
-          color: "#050816",
+          color: "#141C2E",
           fontFamily: "'JetBrains Mono', monospace",
           letterSpacing: "0.05em",
         }}

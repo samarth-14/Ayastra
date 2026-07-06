@@ -8,7 +8,7 @@ import { Footer } from "./Footer";
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen" style={{ background: "#050816", scrollBehavior: "smooth" }}>
+    <div className="min-h-screen" style={{ background: "#141C2E", scrollBehavior: "smooth" }}>
       {/* MARKER-MAKE-KIT-INVOKED */}
       <Navbar />
       <HeroSection />

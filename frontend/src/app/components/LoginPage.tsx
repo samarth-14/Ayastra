@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router";
-import { signInWithGoogle, signInWithEmail } from "../../firebase";
+import { signInWithGoogle, signInWithEmail, describeFirebaseAuthError } from "../../firebase";
 /* ─── Particle Globe (same engine as HeroSection) ─── */
 interface Particle {
   x: number; y: number; z: number;
@@ -207,10 +207,16 @@ export function LoginPage() {
       localStorage.setItem("name", user.displayName || user.email || "");
       localStorage.setItem("user_id", user.uid);
       localStorage.setItem("company_id", "1");
+      // Email/password login authenticates against Firebase only (no backend
+      // JWT), so onboarding status can't be checked here. Treat as an existing
+      // user and go straight to the dashboard — onboarding is enforced at the
+      // signup / Google-login paths where a backend token is available.
+      localStorage.setItem("onboarding_completed", "true");
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      // Firebase errors carry .code / .message (NOT error.response.data.detail).
+      const fb = describeFirebaseAuthError(error, "login");
+      alert(fb?.userMessage ?? "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -238,10 +244,21 @@ export function LoginPage() {
       localStorage.setItem("name", data.full_name);
       localStorage.setItem("user_id", String(data.user_id));
       localStorage.setItem("company_id", String(data.company_id));
-      navigate("/dashboard");
+
+      // Backend tells us whether onboarding is done. New Google users land on
+      // the onboarding flow; returning users go straight to the dashboard.
+      const done = !!data.is_onboarding_completed;
+      localStorage.setItem("onboarding_completed", done ? "true" : "false");
+      if (data.marketplace_role) {
+        localStorage.setItem("marketplace_role", data.marketplace_role);
+      }
+      navigate(done ? "/dashboard" : "/onboarding");
     } catch (error) {
+      // Popup/redirect Firebase errors (e.g. auth/popup-closed-by-user,
+      // auth/operation-not-allowed) surface via .code here too.
+      const fb = describeFirebaseAuthError(error, "google-login");
       console.error("Google login failed:", error);
-      alert("Google login failed.");
+      alert(fb?.userMessage ?? "Google login failed.");
     } finally {
       setLoading(false);
     }
@@ -254,7 +271,7 @@ export function LoginPage() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.45 }}
       className="min-h-screen flex overflow-hidden"
-      style={{ background: "#050816", fontFamily: "'Inter', sans-serif" }}
+      style={{ background: "#141C2E", fontFamily: "'Inter', sans-serif" }}
     >
       {/* ══════════════════════════════════
           LEFT PANEL — Branding + Globe
@@ -280,7 +297,7 @@ export function LoginPage() {
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "radial-gradient(ellipse 60% 60% at 50% 50%, transparent 30%, rgba(5,8,22,0.7) 100%)" }} />
         <div className="absolute inset-y-0 right-0 w-32 pointer-events-none"
-          style={{ background: "linear-gradient(-90deg, #050816, transparent)" }} />
+          style={{ background: "linear-gradient(-90deg, #141C2E, transparent)" }} />
 
         {/* Logo top-left */}
         <div className="relative z-10 p-8">
@@ -340,7 +357,7 @@ export function LoginPage() {
         >
           <div className="flex items-center gap-3 mb-1.5">
             <div className="px-2 py-0.5 rounded text-xs font-bold"
-              style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#050816", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.6rem" }}>
+              style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#141C2E", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.6rem" }}>
               LIVE
             </div>
             <span style={{ color: "#8892a4", fontSize: "0.65rem", fontFamily: "'JetBrains Mono', monospace" }}>METAL MARKETS</span>
@@ -572,7 +589,7 @@ export function LoginPage() {
                   className="w-full py-3.5 rounded-xl font-semibold mt-1 flex items-center justify-center gap-2 transition-all duration-200"
                   style={{
                     background: loading ? "rgba(245,158,11,0.4)" : "linear-gradient(135deg,#F59E0B,#D97706)",
-                    color: "#050816",
+                    color: "#141C2E",
                     fontFamily: "'Space Grotesk', sans-serif",
                     fontSize: "0.9rem",
                     letterSpacing: "0.01em",
@@ -590,7 +607,7 @@ export function LoginPage() {
                       >
                         <motion.div
                           className="w-4 h-4 rounded-full border-2"
-                          style={{ borderColor: "rgba(5,8,22,0.4)", borderTopColor: "#050816" }}
+                          style={{ borderColor: "rgba(5,8,22,0.4)", borderTopColor: "#141C2E" }}
                           animate={{ rotate: 360 }}
                           transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
                         />
