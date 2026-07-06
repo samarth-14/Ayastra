@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+content = '''import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, Plus, Truck, Clock, CheckCircle, X, Trash2, ChevronRight } from "lucide-react";
 import { getOrders, createOrder, getCustomers, getProducts, createCustomer, updateOrderStatus } from "../../../api";
@@ -358,3 +358,8 @@ export function DashboardOrders() {
     </div>
   );
 }
+'''
+
+with open(r'C:\Users\samarth\ayastra\frontend\src\app\components\dashboard\DashboardOrders.tsx', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Done")
