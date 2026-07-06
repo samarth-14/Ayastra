@@ -229,7 +229,7 @@ export function LoginPage() {
       const firebaseToken = await user.getIdToken();
       
       // Register/login user in our backend
-      const response = await fetch("http://127.0.0.1:8000/auth/google", {
+      const response = await fetch("https://ayastra-backend.onrender.com/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
