@@ -32,8 +32,8 @@ export function DashboardPredictions() {
     const fetchData = async () => {
       try {
         const [predRes, accRes] = await Promise.all([
-          fetch("http://localhost:8000/predictions/all"),
-          fetch("http://localhost:8000/predictions/accuracy"),
+          fetch(`${import.meta.env.VITE_API_URL || "https://ayastra-backend.onrender.com"}/predictions/all`),
+          fetch(`${import.meta.env.VITE_API_URL || "https://ayastra-backend.onrender.com"}/predictions/accuracy`),
         ]);
         setPredictions(await predRes.json());
         setAccuracy(await accRes.json());
