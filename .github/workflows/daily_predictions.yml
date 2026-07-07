@@ -1,0 +1,29 @@
+name: Daily Metal Predictions
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # 4 AM UTC = 9:30 AM IST
+  workflow_dispatch:      # allows manual trigger from GitHub
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run predictions
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd backend
+          python cron.py
