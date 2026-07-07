@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
+    # Strip whitespace from column names (yfinance MultiIndex quirk)
+    df.columns = [str(c).strip() for c in df.columns]
     close = df["Close"].squeeze()
     volume = df["Volume"].squeeze()
-
     # Trend
     df["sma_5"]  = close.rolling(5).mean()
     df["sma_10"] = close.rolling(10).mean()
