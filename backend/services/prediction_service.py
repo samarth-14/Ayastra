@@ -36,14 +36,38 @@ def _log_prediction(db: Session, result: dict):
     db.commit()
 
 def get_prediction(metal: str) -> dict:
-    result = predict_metal(metal)
-    db = SessionLocal()
+    # Try live prediction first
     try:
-        if not _already_logged_today(db, metal):
-            _log_prediction(db, result)
-    finally:
-        db.close()
-    return result
+        result = predict_metal(metal)
+        db = SessionLocal()
+        try:
+            if not _already_logged_today(db, metal):
+                _log_prediction(db, result)
+        finally:
+            db.close()
+        return result
+    except Exception as live_error:
+        # Fall back to most recent cached prediction from DB
+        db = SessionLocal()
+        try:
+            record = db.query(MetalPrediction)\
+                .filter(MetalPrediction.metal == metal.capitalize())\
+                .order_by(MetalPrediction.created_at.desc())\
+                .first()
+            if record:
+                return {
+                    "metal":           record.metal,
+                    "prediction":      record.prediction,
+                    "confidence":      record.confidence,
+                    "current_price":   record.current_price,
+                    "predicted_price": record.predicted_price,
+                    "recommendation":  record.recommendation,
+                    "cached":          True,
+                    "cached_at":       record.created_at.isoformat(),
+                }
+            raise ValueError(f"No cached prediction available for {metal}: {live_error}")
+        finally:
+            db.close()
 
 def get_all_predictions() -> list:
     metals = ["copper", "gold", "silver"]
