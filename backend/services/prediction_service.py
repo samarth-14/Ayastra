@@ -11,10 +11,12 @@ from models import MetalPrediction
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'ayastra.db')
-engine = create_engine(f"sqlite:///{DB_PATH}")
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(os.path.dirname(__file__), '..', 'ayastra.db')}")
+# Fix Render/Heroku postgres:// prefix
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
-
 def _already_logged_today(db: Session, metal: str) -> bool:
     today = date.today()
     existing = db.query(MetalPrediction).filter(
