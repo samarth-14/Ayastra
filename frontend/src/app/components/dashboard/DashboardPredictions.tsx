@@ -85,11 +85,11 @@ export function DashboardPredictions() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                   <div style={{ background: "#161b22", borderRadius: 10, padding: "0.75rem" }}>
                     <p style={{ color: "#8892a4", fontSize: "0.7rem", margin: "0 0 4px" }}>Current Price</p>
-                    <p style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", margin: 0 }}>${p.current_price.toLocaleString()}</p>
+                    <p style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", margin: 0 }}>${(p.current_price ?? 0).toLocaleString()}</p>
                   </div>
                   <div style={{ background: "#161b22", borderRadius: 10, padding: "0.75rem" }}>
                     <p style={{ color: "#8892a4", fontSize: "0.7rem", margin: "0 0 4px" }}>Predicted Price</p>
-                    <p style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", margin: 0 }}>${p.predicted_price.toLocaleString()}</p>
+                    <p style={{ color: "#fff", fontWeight: 700, fontSize: "1rem", margin: 0 }}>${(p.predicted_price ?? 0).toLocaleString()}</p>
                   </div>
                 </div>
 
