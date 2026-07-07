@@ -26,12 +26,16 @@ def get_recommendation(prediction: str, confidence: float) -> str:
 def predict_metal(metal: str) -> dict:
     model = load_model(metal)
 
-    df = load_data(metal, period="6mo")
-    df = add_features(df)
+    # Try progressively longer periods if short one returns insufficient data
+    for period in ["1y", "2y", "5y"]:
+        df = load_data(metal, period=period)
+        df = add_features(df)
+        df_clean = df[FEATURE_COLS].replace([float("inf"), float("-inf")], float("nan")).dropna()
+        if len(df_clean) >= 60:
+            break
+    else:
+        raise ValueError(f"Yahoo Finance returned insufficient data for {metal} on this server")
 
-    df_clean = df[FEATURE_COLS].replace([float("inf"), float("-inf")], float("nan")).dropna()
-    if df_clean.empty or len(df_clean) < 2:
-        raise ValueError(f"Not enough clean data to predict {metal}")
     latest = df_clean.iloc[-1:]
     current_price = float(df["Close"].squeeze().iloc[-1])
 
