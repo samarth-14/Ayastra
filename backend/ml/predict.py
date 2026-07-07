@@ -29,7 +29,10 @@ def predict_metal(metal: str) -> dict:
     df = load_data(metal, period="6mo")
     df = add_features(df)
 
-    latest = df[FEATURE_COLS].iloc[-1:]
+    df_clean = df[FEATURE_COLS].replace([float("inf"), float("-inf")], float("nan")).dropna()
+    if df_clean.empty or len(df_clean) < 2:
+        raise ValueError(f"Not enough clean data to predict {metal}")
+    latest = df_clean.iloc[-1:]
     current_price = float(df["Close"].squeeze().iloc[-1])
 
     proba = model.predict_proba(latest)[0]
